@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hybrid Coach v16</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#111310;
+      --panel:#171a17;
+      --panel-2:#1d211d;
+      --surface:#141714;
+      --line:#2b332c;
+      --text:#edf0ea;
+      --muted:#99a197;
+      --accent:#90b67f;
+      --accent-soft:#b7d7aa;
+      --strength:#8fb47b;
+      --strength-bg:#1a2318;
+      --engine:#84aacd;
+      --engine-bg:#182028;
+      --mixed:#c5a06c;
+      --mixed-bg:#241d16;
+      --recovery:#a98fc8;
+      --recovery-bg:#201a28;
+      --radius-xl:20px;
+      --radius-lg:16px;
+      --radius-md:12px;
+      --radius-sm:10px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:'General Sans',system-ui,sans-serif}
+    body{min-height:100vh}
+    h1,h2,h3,p{margin:0}
+    .wrap{max-width:980px;margin:0 auto;padding:20px}
+    .topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+    .logo{width:44px;height:44px;border:1px solid var(--line);border-radius:14px;background:var(--panel);display:grid;place-items:center;color:var(--accent-soft)}
+    .logo svg{width:22px;height:22px}
+    .sub{color:var(--muted);font-size:.96rem}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-xl)}
+    .session{padding:22px}
+    .eyebrow{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--accent-soft)}
+    .session-title{font-size:clamp(2rem,4vw,3.1rem);line-height:.98;font-weight:700;margin-top:12px;max-width:14ch}
+    .session-date{margin-top:8px;color:var(--muted);font-size:1rem}
+    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}
+    .mini{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px}
+    .mini .k{font-size:.78rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+    .mini .v{font-size:1rem;font-weight:700;margin-top:5px}
+    .program{display:grid;gap:14px;margin-top:20px}
+    .block{border:1px solid var(--line);border-radius:16px;background:var(--panel-2);overflow:hidden}
+    .block-head{padding:14px 16px;border-bottom:1px solid var(--line);background:#1a1e1a}
+    .block-head h3{font-size:1rem}
+    .exercise-table{width:100%;border-collapse:collapse}
+    .exercise-table th,.exercise-table td{padding:12px 14px;vertical-align:top;border-top:1px solid #293029;text-align:left}
+    .exercise-table th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:#171b17;border-top:none}
+    .exercise-table td{font-size:.95rem;line-height:1.45}
+    .exercise-table tr:first-child td{border-top:none}
+    .exercise-name{font-weight:700;color:var(--text);font-size:1rem}
+    .exercise-note{color:var(--muted);font-size:.9rem}
+    .calendar{padding:16px;margin-top:18px}
+    .calendar-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:12px}
+    .day-box{padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--surface);min-height:148px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+    .day-box.active{outline:2px solid var(--accent-soft)}
+    .day-box:hover{transform:translateY(-2px);border-color:#425242}
+    .day-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+    .day-dow{font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+    .day-num{font-size:1.75rem;line-height:1;font-weight:700}
+    .day-month{font-size:.82rem;color:var(--muted);margin-top:4px}
+    .pill{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border:1px solid transparent;width:max-content}
+    .pill::before{content:'';width:8px;height:8px;border-radius:999px;background:currentColor}
+    .strength{background:var(--strength-bg);color:var(--strength);border-color:#30412b}
+    .engine{background:var(--engine-bg);color:var(--engine);border-color:#2e4454}
+    .mixed{background:var(--mixed-bg);color:var(--mixed);border-color:#4a3723}
+    .recovery{background:var(--recovery-bg);color:var(--recovery);border-color:#463652}
+    .day-focus{font-size:.92rem;line-height:1.28;color:var(--text);margin-top:10px}
+    @media (max-width:1120px){.summary-grid{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:860px){.calendar-grid{grid-template-columns:repeat(4,1fr)}.calendar-head{flex-direction:column;align-items:flex-start}}
+    @media (max-width:560px){.wrap{padding:12px}.summary-grid{grid-template-columns:1fr}.calendar-grid{grid-template-columns:repeat(2,1fr)}.exercise-table thead{display:none}.exercise-table,.exercise-table tbody,.exercise-table tr,.exercise-table td{display:block;width:100%}.exercise-table td{border-top:none;padding:8px 14px}.exercise-table tr{padding:8px 0;border-top:1px solid #293029}.exercise-table tr:first-child{border-top:none}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div class="logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18 12 6l6 12"/><path d="M9 14h6"/></svg></div>
+      <div>
+        <h1>Hybrid Coach</h1>
+        <p class="sub">Daily training</p>
+      </div>
+    </header>
+
+    <section class="card session">
+      <div class="eyebrow" id="sessionEyebrow">Today</div>
+      <h2 class="session-title" id="sessionTitle">Today’s training</h2>
+      <div class="session-date" id="sessionDate"></div>
+
+      <div class="summary-grid">
+        <div class="mini"><div class="k">Week</div><div class="v" id="cycleBadge"></div></div>
+        <div class="mini"><div class="k">Session</div><div class="v" id="typeBadge"></div></div>
+        <div class="mini"><div class="k">Time</div><div class="v" id="timeBadge"></div></div>
+        <div class="mini"><div class="k">Focus</div><div class="v" id="focusBadge"></div></div>
+      </div>
+
+      <div class="program" id="programStack"></div>
+    </section>
+
+    <section class="card calendar">
+      <div class="calendar-head">
+        <div>
+          <h2 style="font-size:1.08rem">This week</h2><p class="sub">Tap any day to preview that session.</p>
+        </div>
+      </div>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </section>
+  </div>
+
+  <script>
+    const START_DATE = '2026-04-19';
+    const MS_PER_DAY = 86400000;
+    const WEEKDAY = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const WEEKDAY_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const MONTHS_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const lowerBackStatus = 'managed';
+    let selectedDate = null;
+
+    const els = {
+      sessionTitle: document.getElementById('sessionTitle'),
+      sessionDate: document.getElementById('sessionDate'),
+      cycleBadge: document.getElementById('cycleBadge'),
+      typeBadge: document.getElementById('typeBadge'),
+      timeBadge: document.getElementById('timeBadge'),
+      focusBadge: document.getElementById('focusBadge'),
+      programStack: document.getElementById('programStack'),
+      calendarGrid: document.getElementById('calendarGrid')
+    };
+
+    function parseISO(s){ return new Date(`${s}T12:00:00`); }
+    function addDays(date, n){ const d = new Date(date); d.setDate(d.getDate()+n); return d; }
+    function dayDiff(a,b){ return Math.floor((a-b)/MS_PER_DAY); }
+    function formatDate(d){ return `${WEEKDAY[d.getDay()]}, ${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`; }
+    function getInfo(date){
+      const start = parseISO(START_DATE);
+      const dayIndex = Math.max(0, dayDiff(date, start));
+      const weekIndex = Math.floor(dayIndex / 7);
+      const weekInBlock = (weekIndex % 4) + 1;
+      const dayInWeek = dayIndex % 7;
+      return { dayIndex, weekIndex, weekInBlock, dayInWeek };
+    }
+    function row(block, exercise, sets, note=''){ return { block, exercise, sets, note }; }
+    function buildSession(date){
+      const info = getInfo(date);
+      const deload = info.weekInBlock === 4;
+      const lower = lowerBackStatus === 'flared';
+      const sessions = [
+        {
+          type:'Strength', style:'strength', title:'Lower Body + Aerobic Primer', time:'55–60 min', focus:'Squat, posterior chain, zone 2',
+          rows:[
+            row('Warm-up','5 min row + hip mobility + trunk brace','8–10 min'),
+            row('A1','Front squat / back squat', deload ? '4 x 4' : info.weekInBlock===3 ? '1 x 4–6, then 3 x 5' : '5 x 5', 'Rest 2–3 min'),
+            row('A2', lower ? 'DB split squat' : 'Romanian deadlift / DB RDL', deload ? '3 x 6' : '3–4 x 6–8', 'Controlled reps'),
+            row('B1','Hyperextension / reverse hyper','3 x 12–15'),
+            row('B2','Weighted plank or dead bug','3 x 30–45 sec'),
+            row('Finish','Rower or ski erg zone 2','10–15 min')
+          ]
+        },
+        {
+          type:'Engine', style:'engine', title:'Engine + Trunk Durability', time:'45–55 min', focus:'Intervals, carries, trunk',
+          rows:[
+            row('Warm-up','Easy ski or row + mobility','8 min'),
+            row('A1','Ski erg or rower intervals', deload ? '8 x 1 min / 1 min easy' : '10–12 x 1 min hard / 1 min easy'),
+            row('B1','Suitcase carry','5 x 30–40 m / side'),
+            row('B2','Side plank','3 x 30–45 sec / side'),
+            row('B3','Bird dog','3 x 8 / side'),
+            row('Finish','Easy walk or row','8–10 min')
+          ]
+        },
+        {
+          type:'Strength', style:'strength', title:'Upper Body + Pull Strength', time:'50–60 min', focus:'Bench, pull, shoulders',
+          rows:[
+            row('Warm-up','Band work + push-up + row prep','8 min'),
+            row('A1','Bench press / DB bench', deload ? '4 x 5' : info.weekInBlock===3 ? '1 x 4–6, then 3 x 5' : '5 x 5–6', 'Rest 2–3 min'),
+            row('A2','Pull-up or chest-supported DB row','4 x 6–10'),
+            row('B1','Standing DB press','3 x 8–10'),
+            row('B2','Band face pull','3 x 12–15'),
+            row('B3','Curl or triceps band work','2–3 x 12–15')
+          ]
+        },
+        {
+          type:'Hybrid', style:'mixed', title:'Hybrid Work Capacity', time:'45–60 min', focus:'Mixed modal conditioning',
+          rows:[
+            row('Warm-up','Easy machine + movement prep','8 min'),
+            row('Circuit','Ski/row + wall ball + burpee/sprawl + DB step-up', deload ? '4 rounds' : '5–6 rounds', '45–75 sec each station'),
+            row('Pace','Continuous rotation','Steady hard effort'),
+            row('Finish','Easy cooldown','8–10 min')
+          ]
+        },
+        {
+          type:'Strength', style:'strength', title:'Full Body Force + Power', time:'50–60 min', focus:'Power, force, athleticism',
+          rows:[
+            row('Warm-up','Jump, throw, dynamic prep','8 min'),
+            row('A1','Med-ball throw / explosive push-up','4 x 3–5'),
+            row('A2', lower ? 'Front squat / split squat' : 'Block pull / hinge variation', deload ? '4 x 3' : info.weekInBlock===3 ? '5 x 3' : '4 x 4–5', 'Strong, crisp reps'),
+            row('B1','Incline DB bench or weighted row','3–4 x 6–8'),
+            row('B2','Walking lunge or step-up','3 x 8–10 / leg'),
+            row('B3','Carry variation','3 rounds')
+          ]
+        },
+        {
+          type:'Hybrid', style:'mixed', title:'Long Engine + Field Chassis', time:'45–60 min', focus:'Aerobic base, repeatability',
+          rows:[
+            row('Warm-up','Easy machine','5–8 min'),
+            row('A1','Row / ski / mixed machine steady work', deload ? '25–30 min easy' : '30–40 min with short pickups', 'Zone 2'),
+            row('B1','Wall ball','2–3 x 15–20'),
+            row('B2','Push-up','2–3 x 12–20'),
+            row('B3','Band pull-apart','2–3 x 20'),
+            row('B4','Reverse hyper','2–3 x 15')
+          ]
+        },
+        {
+          type:'Recovery', style:'recovery', title:'Recovery + Restore', time:'30–45 min', focus:'Mobility, trunk, reset',
+          rows:[
+            row('A1','Mobility flow','10–12 min'),
+            row('A2','McGill trunk circuit','3 rounds'),
+            row('A3','Reverse hyper / back extension','3 x 12–15'),
+            row('A4','Walk, row, or ski easy','15–20 min')
+          ]
+        }
+      ];
+      return { ...sessions[info.dayInWeek], info };
+    }
+
+    function renderProgram(session){
+      els.programStack.innerHTML = `
+        <article class="block">
+          <div class="block-head"><h3>Training</h3></div>
+          <table class="exercise-table">
+            <thead><tr><th>Block</th><th>Exercise</th><th>Prescription</th><th>Note</th></tr></thead>
+            <tbody>
+              ${session.rows.map(r => `
+                <tr>
+                  <td>${r.block}</td>
+                  <td><div class="exercise-name">${r.exercise}</div></td>
+                  <td>${r.sets}</td>
+                  <td><div class="exercise-note">${r.note || ''}</div></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </article>
+      `;
+    }
+
+    function sameDay(a,b){ return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+
+    function renderCalendar(anchorDate){
+      const startOfWeek = addDays(anchorDate, -anchorDate.getDay());
+      els.calendarGrid.innerHTML = '';
+      for(let i=0;i<7;i++){
+        const d = addDays(startOfWeek, i);
+        const s = buildSession(d);
+        const box = document.createElement('button');
+        box.type = 'button';
+        box.className = `day-box ${s.style}${sameDay(d, selectedDate) ? ' active' : ''}`;
+        box.innerHTML = `
+          <div class="day-top">
+            <div>
+              <div class="day-dow">${WEEKDAY_SHORT[d.getDay()]}</div>
+              <div class="day-num">${d.getDate()}</div>
+              <div class="day-month">${MONTHS_SHORT[d.getMonth()]}</div>
+            </div>
+            <span class="pill ${s.style}">${s.type}</span>
+          </div>
+          <div class="day-focus">${s.title}</div>
+        `;
+        box.addEventListener('click', () => {
+          selectedDate = new Date(d);
+          render();
+        });
+        els.calendarGrid.appendChild(box);
+      }
+    }
+
+    function render(){
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+      if(!selectedDate) selectedDate = new Date(today);
+      const session = buildSession(selectedDate);
+      els.sessionTitle.textContent = session.title;
+      els.sessionDate.textContent = formatDate(selectedDate);
+      els.cycleBadge.textContent = `Week ${session.info.weekIndex + 1}`;
+      els.typeBadge.textContent = session.type;
+      els.timeBadge.textContent = session.time;
+      els.focusBadge.textContent = session.focus;
+      renderProgram(session);
+      renderCalendar(selectedDate);
+    }
+    render();
+  </script>
+</body>
+</html>
